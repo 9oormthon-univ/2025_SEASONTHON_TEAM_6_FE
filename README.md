@@ -33,7 +33,3 @@
 cd [프로젝트 폴더 이름]
 npm install
 npm start
-
-**1. 프로젝트 복제 (Clone)**
-```bash
-git clone [https://github.com/](https://github.com/)[본인 GitHub 아이디]/[저장소 이름].git
