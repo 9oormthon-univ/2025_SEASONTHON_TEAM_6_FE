@@ -30,8 +30,11 @@
 
 이 프로젝트를 로컬 환경에서 실행하려면 아래의 단계를 따라주세요.
 
+```bash
 cd [프로젝트 폴더 이름] 
 <br>
+```bash
 npm install
 <br>
+```bash
 npm start
