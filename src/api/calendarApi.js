@@ -1,7 +1,7 @@
 // 캘린더 이벤트 추가 API
 export const addCalendarEvent = async (accessToken, summary, startTime, endTime) => {
   try {
-    const response = await fetch('https://chibbohae-fastapi.store/calendar/add_event', {
+    const response = await fetch('https://chibbohae-fastapi.store/calendar/add-event', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

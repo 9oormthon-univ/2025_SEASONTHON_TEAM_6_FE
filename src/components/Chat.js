@@ -88,6 +88,16 @@ const Chat = ({ selectedCountry }) => {
           const accessToken = localStorage.getItem('access_token');
           const { startTime, endTime } = getCurrentDateTime();
           
+          // 토큰 로그 출력
+          console.log('=== 토큰 정보 ===');
+          console.log('access_token:', accessToken);
+          console.log('토큰 길이:', accessToken ? accessToken.length : 'null');
+          console.log('토큰 타입:', typeof accessToken);
+          console.log('start_time:', startTime);
+          console.log('end_time:', endTime);
+          console.log('summary:', message);
+          console.log('================');
+          
           try {
             await addCalendarEvent(accessToken, message, startTime, endTime);
             console.log('캘린더 이벤트 추가 완료:', message);
