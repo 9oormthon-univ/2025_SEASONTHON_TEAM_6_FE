@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Chat from "./components/Chat";
 import Insurance from "./components/Insurance";
 import Calendar from "./components/Calendar";
-import SymptomAnalysis from "./components/SymptomAnalysis";
-import HospitalSearch from "./components/HospitalSearch";
-import InsuranceInfo from "./components/InsuranceInfo";
-import TodoManager from "./components/TodoManager";
-import AddTodoModal from "./components/AddTodoModal";
-import { hospitalData } from "./data/hospitalData";
 import "./App.css";
 
 function App() {
@@ -16,42 +10,50 @@ function App() {
   const [activeTab, setActiveTab] = useState("Chat");
   // 사이드바 열림/닫힘 상태
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // 선택된 국가 상태
+  const [selectedCountry, setSelectedCountry] = useState("");
 
-  // 증상 분석 상태
-  const [symptomInput, setSymptomInput] = useState("");
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [symptomResult, setSymptomResult] = useState(null);
+  // URL 파라미터에서 토큰 추출 및 저장
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('access_token');
+    const email = urlParams.get('email');
+    const name = urlParams.get('name');
 
-  // 병원 검색 상태
-  const [locationInput, setLocationInput] = useState("");
-  const [hospitalResults, setHospitalResults] = useState([]);
+    // 토큰이 있으면 localStorage에 저장
+    if (accessToken) {
+      localStorage.setItem('access_token', accessToken);
+      console.log('Access token saved to localStorage');
+    }
 
-  // 보험 정보 상태
-  const [insuranceResult, setInsuranceResult] = useState(null);
-  const [insuranceType, setInsuranceType] = useState("");
+    // 이메일이 있으면 localStorage에 저장
+    if (email) {
+      localStorage.setItem('user_email', decodeURIComponent(email));
+      console.log('User email saved to localStorage');
+    }
 
-  // 할 일 관리 상태
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      title: "진료 예약",
-      description: "오늘 오후 2시 - 서울대병원",
-      completed: false,
-      priority: "high",
-    },
-    {
-      id: 2,
-      title: "보험 서류 제출",
-      description: "마감일: 2주 후",
-      completed: false,
-      priority: "medium",
-    },
-  ]);
-  const [showAddTodo, setShowAddTodo] = useState(false);
+    // 이름이 있으면 localStorage에 저장
+    if (name) {
+      localStorage.setItem('user_name', decodeURIComponent(name));
+      console.log('User name saved to localStorage');
+    }
+
+    // 토큰 관련 파라미터가 있으면 URL에서 제거
+    if (accessToken || email || name) {
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      console.log('URL parameters removed from address bar');
+    }
+  }, []);
 
   return (
     <div className="app">
-      <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
+      <Header 
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+        sidebarOpen={sidebarOpen}
+        selectedCountry={selectedCountry}
+        setSelectedCountry={setSelectedCountry}
+      />
       <div className="main-layout">
         <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <nav className="sidebar-nav">
@@ -76,7 +78,7 @@ function App() {
           </nav>
         </div>
         <div className={`main-content-area ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-          {activeTab === "Chat" && <Chat />}
+          {activeTab === "Chat" && <Chat selectedCountry={selectedCountry} />}
           {activeTab === "Insurance" && <Insurance />}
           {activeTab === "Calendar" && <Calendar />}
         </div>

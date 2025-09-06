@@ -2,13 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import VisitorChart from "./VisitorChart";
+import HospitalList from "./HospitalList";
+import { searchHospitals } from "../api/hospitalApi";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Chat = () => {
+const Chat = ({ selectedCountry }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
+  const [hospitalResults, setHospitalResults] = useState([]);
+  const [showHospitalList, setShowHospitalList] = useState(false);
   
   // GSAP 애니메이션을 위한 refs
   const titleRef = useRef(null);
@@ -22,6 +26,7 @@ const Chat = () => {
   const aboutTitleRef = useRef(null);
   const aboutHeadlineRef = useRef(null);
   const aboutTextRef = useRef(null);
+  const hospitalListRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,8 +35,25 @@ const Chat = () => {
       setIsSliding(true);
       
       try {
-        // 여기에 API 호출 로직 추가
-        console.log("Message sent:", message);
+        // API 호출
+        const results = await searchHospitals(message, selectedCountry);
+        setHospitalResults(results);
+        console.log("병원 검색 결과:", results);
+        
+        // 병원 목록 표시
+        if (results && results.length > 0) {
+          setShowHospitalList(true);
+          
+          // 병원 목록 섹션으로 스크롤
+          setTimeout(() => {
+            if (hospitalListRef.current) {
+              hospitalListRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
+          }, 500); // 병원 목록이 렌더링된 후 스크롤
+        }
         
         // 슬라이드 애니메이션 후 초기화
         setTimeout(() => {
@@ -40,7 +62,8 @@ const Chat = () => {
           setMessage("");
         }, 1000);
       } catch (error) {
-        console.error('요청 오류:', error);
+        console.error('병원 검색 오류:', error);
+        alert('병원 검색 중 오류가 발생했습니다.');
         setIsLoading(false);
         setIsSliding(false);
       }
@@ -619,6 +642,17 @@ const Chat = () => {
           }
         }
       `}</style>
+      
+      {/* 병원 목록 섹션 */}
+      {showHospitalList && (
+        <div ref={hospitalListRef} style={{
+          width: '100%',
+          backgroundColor: 'black',
+          padding: '60px 0'
+        }}>
+          <HospitalList hospitals={hospitalResults} />
+        </div>
+      )}
     </div>
   );
 };

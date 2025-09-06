@@ -19,7 +19,7 @@ body {
 }
 
 .header {
-  background: linear-gradient(135deg, #00DBA3 0%, #3182f6 70%, #00DBA3 150%);
+  background: linear-gradient(135deg, #00DBA3 -10%, #3182f6 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -117,7 +117,7 @@ body {
 
 .main-content-area {
   flex: 1;
-  background: linear-gradient(135deg, #00DBA3 0%, #3182f6 30%, #00DBA3 140%);
+  background: linear-gradient(135deg, #00DBA3 0%, #3182f6 50%, #00DBA3 140%);
   transition: all 0.3s ease;
 }
 

@@ -1,10 +1,219 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Calendar = () => {
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(2025);
+
+  const monthNames = [
+    "1월", "2월", "3월", "4월", "5월", "6월",
+    "7월", "8월", "9월", "10월", "11월", "12월"
+  ];
+
+  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+
+  // 해당 월의 첫째 날과 마지막 날 계산
+  const firstDay = new Date(currentYear, currentMonth, 1);
+  const lastDay = new Date(currentYear, currentMonth + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  const startingDayOfWeek = firstDay.getDay();
+
+  // 캘린더 날짜 배열 생성
+  const calendarDays = [];
+  
+  // 이전 달의 마지막 날들 (빈 칸 채우기)
+  const prevMonth = new Date(currentYear, currentMonth, 0);
+  for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+    calendarDays.push({
+      day: prevMonth.getDate() - i,
+      isCurrentMonth: false,
+      isToday: false
+    });
+  }
+
+  // 현재 달의 날들
+  const today = new Date();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const isToday = 
+      day === today.getDate() && 
+      currentMonth === today.getMonth() && 
+      currentYear === today.getFullYear();
+    
+    calendarDays.push({
+      day,
+      isCurrentMonth: true,
+      isToday
+    });
+  }
+
+  // 다음 달의 첫째 날들 (빈 칸 채우기)
+  const remainingDays = 42 - calendarDays.length; // 6주 * 7일 = 42
+  for (let day = 1; day <= remainingDays; day++) {
+    calendarDays.push({
+      day,
+      isCurrentMonth: false,
+      isToday: false
+    });
+  }
+
+  const goToPreviousMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
   return (
-    <div>
-      <h2>Calendar</h2>
-      <p>캘린더가 여기에 표시됩니다.</p>
+    <div style={{
+      maxWidth: '1200px',
+      margin: '40px auto 40px auto',
+      padding: '20px 15px 15px 15px',
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      borderRadius: '12px',
+      color: 'white'
+    }}>
+      {/* 헤더 */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '25px',
+        padding: '0 5px'
+      }}>
+        <button
+          onClick={goToPreviousMonth}
+          style={{
+            background: 'rgba(255, 255, 255, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            borderRadius: '6px',
+            color: 'white',
+            padding: '6px 12px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            backdropFilter: 'blur(5px)'
+          }}
+        >
+          ←
+        </button>
+        
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: '300',
+          fontFamily: '"Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif',
+          letterSpacing: '1px',
+          margin: 0,
+          color: 'white'
+        }}>
+          {currentYear}년 {monthNames[currentMonth]}
+        </h2>
+        
+        <button
+          onClick={goToNextMonth}
+          style={{
+            background: 'rgba(255, 255, 255, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            borderRadius: '6px',
+            color: 'white',
+            padding: '6px 12px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            backdropFilter: 'blur(5px)'
+          }}
+        >
+          →
+        </button>
+      </div>
+
+      {/* 요일 헤더 */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(7, 1fr)',
+        gap: '1px',
+        marginBottom: '8px'
+      }}>
+        {dayNames.map((day, index) => (
+          <div
+            key={day}
+            style={{
+              padding: '8px 4px',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              fontSize: '12px',
+              color: index === 0 ? 'rgba(255, 255, 255, 0.9)' : index === 6 ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(5px)'
+            }}
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* 캘린더 그리드 */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(7, 1fr)',
+        gap: '1px'
+      }}>
+        {calendarDays.map((date, index) => (
+          <div
+            key={index}
+            style={{
+              aspectRatio: '2.0',
+              padding: '6px 4px',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+              fontSize: '14px',
+              cursor: 'pointer',
+              backgroundColor: date.isCurrentMonth 
+                ? date.isToday 
+                  ? 'rgba(255, 255, 255, 0.3)' 
+                  : 'rgba(255, 255, 255, 0.1)'
+                : 'rgba(255, 255, 255, 0.05)',
+              color: date.isCurrentMonth 
+                ? date.isToday 
+                  ? '#00FFFF' 
+                  : '#00FFFF'
+                : 'rgba(0, 255, 255, 0.4)',
+              border: date.isToday ? '2px solid #00FFFF' : '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '8px',
+              transition: 'all 0.2s ease',
+              backdropFilter: 'blur(5px)'
+            }}
+            onMouseEnter={(e) => {
+              if (date.isCurrentMonth) {
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.transform = 'scale(1.05)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (date.isCurrentMonth) {
+                e.target.style.backgroundColor = date.isToday 
+                  ? 'rgba(255, 255, 255, 0.3)' 
+                  : 'rgba(255, 255, 255, 0.1)';
+                e.target.style.transform = 'scale(1)';
+              }
+            }}
+          >
+            {date.day}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

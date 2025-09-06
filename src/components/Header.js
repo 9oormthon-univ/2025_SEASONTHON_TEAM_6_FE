@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 
-const Header = ({ onToggleSidebar, sidebarOpen }) => {
+const Header = ({ onToggleSidebar, sidebarOpen, selectedCountry, setSelectedCountry }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState("");
   return (
     <header className="header">
       {/* 왼쪽 로고 */}
@@ -53,8 +52,15 @@ const Header = ({ onToggleSidebar, sidebarOpen }) => {
           }}
         >
           <option value="" style={{ color: "#333", background: "white" }}>Select Country</option>
-          <option value="usa" style={{ color: "#333", background: "white" }}>United States</option>
-          <option value="china" style={{ color: "#333", background: "white" }}>China</option>
+          <option value="Mongolia" style={{ color: "#333", background: "white" }}>Mongolia</option>
+          <option value="America" style={{ color: "#333", background: "white" }}>America</option>
+          <option value="Vietnam" style={{ color: "#333", background: "white" }}>Vietnam</option>
+          <option value="Russia" style={{ color: "#333", background: "white" }}>Russia</option>
+          <option value="Japan" style={{ color: "#333", background: "white" }}>Japan</option>
+          <option value="China" style={{ color: "#333", background: "white" }}>China</option>
+          <option value="Middle East" style={{ color: "#333", background: "white" }}>Middle East</option>
+          <option value="Korea" style={{ color: "#333", background: "white" }}>Korea</option>
+          <option value="Other" style={{ color: "#333", background: "white" }}>Other</option>
         </select>
         
         <button 
@@ -154,9 +160,8 @@ const Header = ({ onToggleSidebar, sidebarOpen }) => {
             
             <button
               onClick={() => {
-                // Google Login 로직 추가
-                console.log('Google Login clicked');
-                setShowLoginModal(false);
+                // Google Login API 호출
+                window.location.href = 'https://chibbohae-fastapi.store/login/oauth2/code/login/google';
               }}
               style={{
                 background: '#4285f4',
