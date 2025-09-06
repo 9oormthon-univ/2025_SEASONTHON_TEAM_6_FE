@@ -19,12 +19,12 @@ body {
 }
 
 .header {
-  background: white;
+  background: linear-gradient(135deg, #00DBA3 20%, #3182f6 130%);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
-  border-bottom: 1px solid #cfcfcf;
+  padding: 25px 25px;
+  border-bottom: 1px solid #ffffff;
 }
 
 .logo-section {
@@ -72,6 +72,14 @@ body {
   background: white;
   border-right: 1px solid #cfcfcf;
   padding: 30px 0;
+  transition: all 0.3s ease;
+}
+
+.sidebar.closed {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-right: none;
 }
 
 .sidebar-nav {
@@ -109,8 +117,12 @@ body {
 
 .main-content-area {
   flex: 1;
-  background: #fafafa;
-  padding: 30px;
+  background: linear-gradient(135deg, #00DBA3, #3182f6);
+  transition: all 0.3s ease;
+}
+
+.main-content-area.sidebar-closed {
+  margin-left: 0;
 }
 
 h1 {

@@ -1,9 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import VisitorChart from "./VisitorChart";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
+  
+  // GSAP 애니메이션을 위한 refs
+  const titleRef = useRef(null);
+  const subtitleRef = useRef(null);
+  const featuresRef = useRef(null);
+  const containerRef = useRef(null);
+  const chartTitleRef = useRef(null);
+  const card1Ref = useRef(null);
+  const card2Ref = useRef(null);
+  const card3Ref = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,46 +51,326 @@ const Chat = () => {
     }
   };
 
+  // GSAP 애니메이션 초기화
+  useEffect(() => {
+    const tl = gsap.timeline();
+    
+    // 초기 상태 설정
+    gsap.set([subtitleRef.current], {
+      opacity: 0,
+      y: 50
+    });
+
+    // MediBuddy 한글자씩 애니메이션
+    const titleText = "MediBuddy";
+    const titleElement = titleRef.current;
+    
+    // 각 글자를 span으로 감싸기
+    titleElement.innerHTML = titleText.split('').map((char, index) => 
+      `<span style="display: inline-block; opacity: 0; transform: translateY(50px);">${char}</span>`
+    ).join('');
+
+    const spans = titleElement.querySelectorAll('span');
+    
+    // 각 글자 애니메이션
+    spans.forEach((span, index) => {
+      gsap.to(span, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "back.out(1.7)",
+        delay: index * 0.1
+      });
+    });
+
+    // 서브타이틀 애니메이션 (제목 완료 후 0.5초 지연)
+    tl.to(subtitleRef.current, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: "power2.out"
+    }, "+=0.5");
+
+    // 차트 제목 한글자씩 애니메이션
+    if (chartTitleRef.current) {
+      const chartTitleText = "외국인 방문객 수 추이";
+      const chartTitleElement = chartTitleRef.current;
+      
+      // 각 글자를 span으로 감싸기 (공백 포함)
+      chartTitleElement.innerHTML = chartTitleText.split('').map((char, index) => 
+        char === ' ' 
+          ? `<span style="display: inline-block; opacity: 0; width: 0.3em;">&nbsp;</span>`
+          : `<span style="display: inline-block; opacity: 0;">${char}</span>`
+      ).join('');
+
+      const chartSpans = chartTitleElement.querySelectorAll('span');
+      
+      // 각 글자 애니메이션
+      chartSpans.forEach((span, index) => {
+        gsap.to(span, {
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          delay: index * 0.1,
+          scrollTrigger: {
+            trigger: chartTitleElement,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse"
+          }
+        });
+      });
+    }
+
+    // 카드 애니메이션 - setTimeout으로 DOM 렌더링 후 실행
+    setTimeout(() => {
+      if (card1Ref.current && card2Ref.current && card3Ref.current) {
+        // 초기 상태 설정
+        gsap.set([card1Ref.current, card2Ref.current, card3Ref.current], {
+          opacity: 0,
+          y: 100,
+          scale: 0.8
+        });
+
+        // 카드들을 순차적으로 애니메이션
+        const cardTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: card1Ref.current,
+            start: "top 85%",
+            end: "bottom 15%",
+            toggleActions: "play none none reverse",
+            markers: false // 디버깅용 마커 (필요시 true로 변경)
+          }
+        });
+
+        cardTimeline
+          .to(card1Ref.current, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: "back.out(1.7)"
+          })
+          .to(card2Ref.current, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: "back.out(1.7)"
+          }, "-=0.4")
+          .to(card3Ref.current, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: "back.out(1.7)"
+          }, "-=0.4");
+      }
+    }, 100);
+
+  }, []);
+
   return (
     <div style={{ 
       background: "transparent", 
       height: "100%", 
       display: "flex", 
       flexDirection: "column",
-      position: "relative"
+      position: "relative",
     }}>
-      <div style={{ 
-        maxWidth: "800px", 
+      <div ref={containerRef} style={{ 
+        maxWidth: "1400px", 
         margin: "0 auto", 
         padding: "40px",
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        textAlign: "center",
+        paddingTop: "80px"
       }}>
-        <h2 style={{ 
-          textAlign: "center", 
-          color: "#374151", 
-          fontSize: "40px", 
-          marginTop: "-30%", 
-          fontFamily: "Arial, sans-serif",
-          fontWeight: "500",
-          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
-          letterSpacing: "1px"
+        {/* 메인 타이틀 */}
+        <h1 ref={titleRef} style={{
+          fontSize: "80px",
+          fontWeight: "1000",
+          fontFamily: "Roboto, sans-serif",
+          color: "#f8f9fa",
+          marginBottom: "20px",
+          lineHeight: "1.2"
         }}>
-          Please describe your symptoms!
-        </h2>
+          MediBuddy
+        </h1>
+        
+        {/* 서브타이틀 */}
+        <p ref={subtitleRef} style={{
+          fontSize: "28px",
+          color: "#f8f9fa",
+          marginBottom: "90px",
+          lineHeight: "1.4",
+          maxWidth: "600px"
+        }}>
+          병원 선택부터 보험 안내까지,<br/>
+          언어 장벽 없이 안전하고 정확한 올인원 건강 가이드
+        </p>
+        
+        {/* 스크롤 화살표 */}
+        <div style={{
+          marginBottom: "190px",
+          animation: "bounce 2s infinite"
+        }}>
+          <svg 
+            width="32" 
+            height="32" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="rgba(255, 255, 255, 0.7)" 
+            strokeWidth="2"
+          >
+            <path d="M7 13l3 3 3-3M7 6l3 3 3-3"/>
+          </svg>
+        </div>
+        
+      </div>
+      
+      {/* 방문객 수 선그래프 - 전체 너비 섹션 */}
+      <div style={{ 
+        width: '100%',
+        backgroundColor: 'black',
+        padding: '40px 0',
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: '20px'
+      }}>
+        <div style={{ 
+          width: '800px', 
+          backgroundColor: 'black',
+          padding: '20px',
+          borderRadius: '16px'
+        }}>
+          <h3 ref={chartTitleRef} style={{ textAlign: 'center', color: 'white', marginBottom: '50px', fontSize: '24px', fontWeight: '600', fontFamily: 'Pretendard, sans-serif' }}>
+            외국인 방문객 수 추이
+          </h3>
+          <VisitorChart />
+        </div>
+      </div>
+      
+      {/* 통계 카드 섹션 */}
+      <div style={{
+        width: '100%',
+        backgroundColor: 'black',
+        padding: '60px 0 200px 0',
+        display: 'flex',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          width: '100%',
+          maxWidth: '1200px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '30px',
+          padding: '0 40px'
+        }}>
+          {/* 외국인 방문객수 카드 */}
+          <div ref={card1Ref} style={{
+            backgroundColor: '#1a1a1a',
+            borderRadius: '16px',
+            padding: '30px',
+            textAlign: 'center',
+            border: '1px solid #333'
+          }}>
+            <h4 style={{
+              color: '#888',
+              fontSize: '16px',
+              fontWeight: '500',
+              marginBottom: '20px',
+              lineHeight: '1.4'
+            }}>
+              외국인 방문객수
+            </h4>
+            <div style={{
+              color: 'white',
+              fontSize: '32px',
+              fontWeight: 'bold',
+              lineHeight: '1.2'
+            }}>
+              1636만 명 +
+            </div>
+          </div>
+          
+          {/* 외국어 지원 가능 병원 수 카드 */}
+          <div ref={card2Ref} style={{
+            backgroundColor: '#1a1a1a',
+            borderRadius: '16px',
+            padding: '30px',
+            textAlign: 'center',
+            border: '1px solid #333'
+          }}>
+            <h4 style={{
+              color: '#888',
+              fontSize: '16px',
+              fontWeight: '500',
+              marginBottom: '20px',
+              lineHeight: '1.4'
+            }}>
+              외국어 지원 가능 병원 수
+            </h4>
+            <div style={{
+              color: 'white',
+              fontSize: '32px',
+              fontWeight: 'bold',
+              lineHeight: '1.2'
+            }}>
+              5,876개 +
+            </div>
+          </div>
+          
+          {/* 외국인 의료정보부족 비율 카드 */}
+          <div ref={card3Ref} style={{
+            backgroundColor: '#1a1a1a',
+            borderRadius: '16px',
+            padding: '30px',
+            textAlign: 'center',
+            border: '1px solid #333'
+          }}>
+            <h4 style={{
+              color: '#888',
+              fontSize: '16px',
+              fontWeight: '500',
+              marginBottom: '20px',
+              lineHeight: '1.4'
+            }}>
+              외국인 의료정보부족 비율
+            </h4>
+            <div style={{
+              color: 'white',
+              fontSize: '32px',
+              fontWeight: 'bold',
+              lineHeight: '1.2'
+            }}>
+              외국인 노동자 대상 49.5%
+            </div>
+          </div>
+        </div>
       </div>
       
       <div style={{
-        position: "absolute",
-        bottom: "40px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "100%",
-        maxWidth: "800px",
-        padding: "0 40px"
+        width: '100vw',
+        backgroundColor: 'transparent',
+        padding: '40px 0',
+        marginLeft: 'calc(-50vw + 50%)',
+        marginRight: 'calc(-50vw + 50%)',
+        position: 'fixed',
+        bottom: '0px',
+        left: '0px',
+        zIndex: 1000
       }}>
+        <div style={{
+          width: "100%",
+          maxWidth: "800px",
+          margin: "0 auto",
+          padding: "0 40px"
+        }}>
         <form onSubmit={handleSubmit}>
           <div style={{
             position: "relative",
@@ -97,7 +392,7 @@ const Chat = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="메시지를 입력하세요..."
+                placeholder="Please enter your symptoms..."
                 style={{
                   width: "100%",
                   minHeight: "40px",
@@ -159,12 +454,25 @@ const Chat = () => {
             </button>
           </div>
         </form>
+        </div>
       </div>
       
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+          }
+          40% {
+            transform: translateY(-10px);
+          }
+          60% {
+            transform: translateY(-5px);
+          }
         }
       `}</style>
     </div>

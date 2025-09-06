@@ -14,6 +14,8 @@ import "./App.css";
 function App() {
   // 현재 활성 탭 상태 (Chat이 기본)
   const [activeTab, setActiveTab] = useState("Chat");
+  // 사이드바 열림/닫힘 상태
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // 증상 분석 상태
   const [symptomInput, setSymptomInput] = useState("");
@@ -49,9 +51,9 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
+      <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
       <div className="main-layout">
-        <div className="sidebar">
+        <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <nav className="sidebar-nav">
             <button 
               className={`sidebar-link ${activeTab === "Chat" ? "active" : ""}`}
@@ -73,7 +75,7 @@ function App() {
             </button>
           </nav>
         </div>
-        <div className="main-content-area">
+        <div className={`main-content-area ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
           {activeTab === "Chat" && <Chat />}
           {activeTab === "Insurance" && <Insurance />}
           {activeTab === "Calendar" && <Calendar />}
