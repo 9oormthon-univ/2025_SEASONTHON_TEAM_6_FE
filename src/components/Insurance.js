@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 
 // SVG Icon Components
@@ -103,20 +102,10 @@ const Modal = ({ data, onClose }) => {
           </div>
         )}
       </div>
-=======
-import React from "react";
-
-const Insurance = () => {
-  return (
-    <div>
-      <h2>Insurance</h2>
-      <p>보험 정보가 여기에 표시됩니다.</p>
->>>>>>> 177c763dacd3b88223d86527c3523e6af4d41d38
     </div>
   );
 };
 
-<<<<<<< HEAD
 // Main Insurance Component
 const Insurance = () => {
   const [selectedInsurance, setSelectedInsurance] = useState(null);
@@ -454,6 +443,3 @@ const Insurance = () => {
 };
 
 export default Insurance;
-=======
-export default Insurance;
->>>>>>> 177c763dacd3b88223d86527c3523e6af4d41d38
