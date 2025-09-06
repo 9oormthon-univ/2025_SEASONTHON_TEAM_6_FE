@@ -19,12 +19,12 @@ body {
 }
 
 .header {
-  background: linear-gradient(135deg, #00DBA3 20%, #3182f6 130%);
+  background: linear-gradient(135deg, #00DBA3 0%, #3182f6 70%, #00DBA3 150%);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 25px 25px;
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 0.7px solid #ffffff82;
 }
 
 .logo-section {
@@ -117,7 +117,7 @@ body {
 
 .main-content-area {
   flex: 1;
-  background: linear-gradient(135deg, #00DBA3, #3182f6);
+  background: linear-gradient(135deg, #00DBA3 0%, #3182f6 30%, #00DBA3 140%);
   transition: all 0.3s ease;
 }
 

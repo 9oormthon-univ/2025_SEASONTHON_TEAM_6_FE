@@ -19,6 +19,9 @@ const Chat = () => {
   const card1Ref = useRef(null);
   const card2Ref = useRef(null);
   const card3Ref = useRef(null);
+  const aboutTitleRef = useRef(null);
+  const aboutHeadlineRef = useRef(null);
+  const aboutTextRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -168,6 +171,47 @@ const Chat = () => {
       }
     }, 100);
 
+    // About 섹션 애니메이션
+    setTimeout(() => {
+      if (aboutTitleRef.current && aboutHeadlineRef.current && aboutTextRef.current) {
+        // 초기 상태 설정
+        gsap.set([aboutTitleRef.current, aboutHeadlineRef.current, aboutTextRef.current], {
+          opacity: 0,
+          y: 50
+        });
+
+        // About 요소들을 순차적으로 애니메이션
+        const aboutTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: aboutTitleRef.current,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse"
+          }
+        });
+
+        aboutTimeline
+          .to(aboutTitleRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out"
+          })
+          .to(aboutHeadlineRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power2.out"
+          }, "-=0.3")
+          .to(aboutTextRef.current, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out"
+          }, "-=0.5");
+      }
+    }, 200);
+
   }, []);
 
   return (
@@ -203,16 +247,61 @@ const Chat = () => {
         </h1>
         
         {/* 서브타이틀 */}
-        <p ref={subtitleRef} style={{
-          fontSize: "28px",
-          color: "#f8f9fa",
-          marginBottom: "90px",
-          lineHeight: "1.4",
-          maxWidth: "600px"
-        }}>
-          병원 선택부터 보험 안내까지,<br/>
-          언어 장벽 없이 안전하고 정확한 올인원 건강 가이드
-        </p>
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <p ref={subtitleRef} style={{
+            fontSize: "28px",
+            color: "#f8f9fa",
+            marginBottom: "90px",
+            lineHeight: "1.4",
+            maxWidth: "600px"
+          }}>
+            병원 선택부터 보험 안내까지,<br/>
+            언어 장벽 없이 안전하고 정확한 올인원 건강 가이드
+          </p>
+          
+          {/* 십자가 이미지 */}
+          <div style={{
+            position: "absolute",
+            bottom: "-280px",
+            right: "-380px",
+            width: "400px",
+            height: "400px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
+            <img 
+              src="/cross.svg" 
+              alt="Cross" 
+              style={{
+                width: "80%",
+                height: "80%",
+                objectFit: "contain",
+                filter: "brightness(0) invert(1) opacity(0.3)"
+              }}
+            />
+          </div>
+          
+           {/* 십자가 중앙을 기준으로 화면 전체 가로선 */}
+           <div style={{
+             position: "absolute",
+             bottom: "-85px",
+             left: "-458px",
+             width: "72vw",
+             height: "3px",
+             backgroundColor: "rgba(255, 255, 255, 0.3)",
+             zIndex: 5
+           }} />
+           <div style={{
+             position: "absolute",
+             bottom: "-85px",
+             left: "900px",
+             width: "10vw",
+             height: "3px",
+             backgroundColor: "rgba(255, 255, 255, 0.3)",
+             zIndex: 5
+           }} />
+        </div>
         
         {/* 스크롤 화살표 */}
         <div style={{
@@ -252,6 +341,60 @@ const Chat = () => {
             외국인 방문객 수 추이
           </h3>
           <VisitorChart />
+        </div>
+      </div>
+      
+      {/* About 섹션 */}
+      <div style={{
+        width: '100%',
+        backgroundColor: 'black',
+        padding: '80px 0',
+        display: 'flex',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          width: '100%',
+          maxWidth: '800px',
+          textAlign: 'center',
+          padding: '0 40px'
+        }}>
+          {/* About 제목 */}
+          <div ref={aboutTitleRef} style={{
+            color: '#888',
+            fontSize: '16px',
+            fontWeight: '500',
+            marginBottom: '30px',
+            letterSpacing: '2px'
+          }}>
+            About
+          </div>
+          
+          {/* 헤드라인 */}
+          <h2 ref={aboutHeadlineRef} style={{
+            color: 'white',
+            fontSize: '36px',
+            fontWeight: 'bold',
+            lineHeight: '1.4',
+            marginBottom: '30px',
+            fontFamily: 'Pretendard, sans-serif'
+          }}>
+            꾸준히 늘어나는 외국인 방문객,<br/>
+            언어 장벽을 넘어선 의료정보 혁신이 필요합니다.
+          </h2>
+          
+          {/* 설명 텍스트 */}
+          <p ref={aboutTextRef} style={{
+            color: '#ccc',
+            fontSize: '18px',
+            lineHeight: '1.6',
+            maxWidth: '600px',
+            margin: '0 auto'
+          }}>
+            외국인 방문객 수는 매년 증가하고 있습니다.<br/>
+            하지만 의료 정보 접근은 여전히 제한적입니다.<br/>
+            우리는 언어 장벽 없는 편리한 의료정보 시스템을 통해<br/>
+            외국인의 건강한 삶을 지원합니다.
+          </p>
         </div>
       </div>
       
@@ -377,9 +520,10 @@ const Chat = () => {
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            background: "white",
+            background: "rgba(255, 255, 255, 0.3)",
+            backdropFilter: "blur(5px)",
             borderRadius: "32px",
-            border: "1px solid black",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
             boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
             padding: "8px",
             minHeight: "80px",
