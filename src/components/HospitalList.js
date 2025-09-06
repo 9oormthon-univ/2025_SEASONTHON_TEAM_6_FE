@@ -2,6 +2,18 @@ import React, { useState } from "react";
 
 const HospitalList = ({ hospitals }) => {
   const [selectedHospital, setSelectedHospital] = useState(null);
+  
+  // 선택된 병원이 있으면 해당 병원만, 없으면 모든 병원의 지도 URL 생성
+  const getMapUrl = () => {
+    if (selectedHospital && selectedHospital.latitude && selectedHospital.longitude) {
+      // 선택된 병원만 표시
+      return `https://maps.googleapis.com/maps/api/staticmap?size=600x400&zoom=15&markers=color:red|${selectedHospital.latitude},${selectedHospital.longitude}&key=AIzaSyBdl7hNzpfeSC8ifDL7aGv9Iv0040K7teY`;
+    } else if (hospitals && hospitals.mapUrl) {
+      // 모든 병원 표시 (기본값)
+      return hospitals.mapUrl;
+    }
+    return null;
+  };
 
   return (
     <div style={{
@@ -20,7 +32,7 @@ const HospitalList = ({ hospitals }) => {
           fontSize: '20px',
           margin: 10
         }}>
-          총 {hospitals.length}개의 병원을 찾았습니다.
+          총 {hospitals.hospitals ? hospitals.hospitals.length : hospitals.length}개의 병원을 찾았습니다.
         </p>
       </div>
 
@@ -49,7 +61,7 @@ const HospitalList = ({ hospitals }) => {
           </h3>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {hospitals.map((hospital, index) => (
+            {(hospitals.hospitals || hospitals).map((hospital, index) => (
               <div
                 key={index}
                 onClick={() => setSelectedHospital(hospital)}
@@ -124,30 +136,79 @@ const HospitalList = ({ hospitals }) => {
             지도
           </h3>
           
-          {/* 지도 플레이스홀더 */}
-          <div style={{
-            width: '100%',
-            height: '400px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '2px dashed rgba(255, 255, 255, 0.3)'
-          }}>
+          {/* 실제 지도 표시 */}
+          {getMapUrl() ? (
             <div style={{
-              textAlign: 'center',
-              color: 'rgba(255, 255, 255, 0.6)'
+              width: '100%',
+              height: '400px',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              border: '2px solid rgba(255, 255, 255, 0.2)'
             }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
-              <div style={{ fontSize: '16px' }}>
-                {selectedHospital 
-                  ? `${selectedHospital.name_korean} 위치` 
-                  : '병원을 선택하면 지도가 표시됩니다'
-                }
+              <img 
+                src={getMapUrl()} 
+                alt="병원 위치 지도"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+                onError={(e) => {
+                  // 지도 로딩 실패 시 플레이스홀더 표시
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              {/* 지도 로딩 실패 시 표시될 플레이스홀더 */}
+              <div style={{
+                width: '100%',
+                height: '100%',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                display: 'none',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px dashed rgba(255, 255, 255, 0.3)'
+              }}>
+                <div style={{
+                  textAlign: 'center',
+                  color: 'rgba(255, 255, 255, 0.6)'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
+                  <div style={{ fontSize: '16px' }}>
+                    {selectedHospital 
+                      ? `${selectedHospital.name_korean} 위치` 
+                      : '병원을 선택하면 지도가 표시됩니다'
+                    }
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div style={{
+              width: '100%',
+              height: '400px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px dashed rgba(255, 255, 255, 0.3)'
+            }}>
+              <div style={{
+                textAlign: 'center',
+                color: 'rgba(255, 255, 255, 0.6)'
+              }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
+                <div style={{ fontSize: '16px' }}>
+                  {selectedHospital 
+                    ? `${selectedHospital.name_korean} 위치` 
+                    : '병원을 선택하면 지도가 표시됩니다'
+                  }
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 선택된 병원 정보 */}
           {selectedHospital && (

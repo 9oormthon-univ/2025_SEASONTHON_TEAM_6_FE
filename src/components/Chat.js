@@ -41,7 +41,7 @@ const Chat = ({ selectedCountry }) => {
         console.log("병원 검색 결과:", results);
         
         // 병원 목록 표시
-        if (results && results.length > 0) {
+        if (results && (results.hospitals ? results.hospitals.length > 0 : results.length > 0)) {
           setShowHospitalList(true);
           
           // 병원 목록 섹션으로 스크롤
