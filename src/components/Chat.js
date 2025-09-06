@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import VisitorChart from "./VisitorChart";
 import HospitalList from "./HospitalList";
 import { searchHospitals } from "../api/hospitalApi";
+import { addCalendarEvent } from "../api/calendarApi";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,7 @@ const Chat = ({ selectedCountry }) => {
   const [isSliding, setIsSliding] = useState(false);
   const [hospitalResults, setHospitalResults] = useState([]);
   const [showHospitalList, setShowHospitalList] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   // GSAP 애니메이션을 위한 refs
   const titleRef = useRef(null);
@@ -28,6 +30,52 @@ const Chat = ({ selectedCountry }) => {
   const aboutTextRef = useRef(null);
   const hospitalListRef = useRef(null);
 
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('access_token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkAuthStatus();
+    
+    // localStorage 변경 감지
+    const handleStorageChange = () => {
+      checkAuthStatus();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // 컴포넌트 마운트 시에도 확인
+    const interval = setInterval(checkAuthStatus, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // 현재 날짜와 시간을 ISO 형식으로 반환하는 함수
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    // 시작 시간 (현재 시간)
+    const startTime = `${year}-${month}-${day}T${hours}:${minutes}:00+09:00`;
+    
+    // 종료 시간 (1시간 30분 후)
+    const endTime = new Date(now.getTime() + 90 * 60 * 1000); // 90분 추가
+    const endHours = String(endTime.getHours()).padStart(2, '0');
+    const endMinutes = String(endTime.getMinutes()).padStart(2, '0');
+    const endTimeStr = `${year}-${month}-${day}T${endHours}:${endMinutes}:00+09:00`;
+    
+    return { startTime, endTime: endTimeStr };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (message.trim() && !isLoading && !isSliding) {
@@ -35,6 +83,20 @@ const Chat = ({ selectedCountry }) => {
       setIsSliding(true);
       
       try {
+        // 로그인된 상태라면 캘린더 이벤트 추가
+        if (isLoggedIn) {
+          const accessToken = localStorage.getItem('access_token');
+          const { startTime, endTime } = getCurrentDateTime();
+          
+          try {
+            await addCalendarEvent(accessToken, message, startTime, endTime);
+            console.log('캘린더 이벤트 추가 완료:', message);
+          } catch (calendarError) {
+            console.error('캘린더 이벤트 추가 오류:', calendarError);
+            // 캘린더 오류는 무시하고 병원 검색은 계속 진행
+          }
+        }
+
         // API 호출
         const results = await searchHospitals(message, selectedCountry);
         setHospitalResults(results);

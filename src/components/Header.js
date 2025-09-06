@@ -44,6 +44,7 @@ const Header = ({ onToggleSidebar, sidebarOpen, selectedCountry, setSelectedCoun
     localStorage.removeItem('access_token');
     localStorage.removeItem('user_email');
     localStorage.removeItem('user_name');
+    localStorage.removeItem('user_calendars');
     setIsLoggedIn(false);
     setUserInfo(null);
     console.log('Logged out successfully');
