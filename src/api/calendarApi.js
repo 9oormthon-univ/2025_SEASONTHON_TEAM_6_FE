@@ -5,9 +5,9 @@ export const addCalendarEvent = async (accessToken, summary, startTime, endTime)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
-        access_token: accessToken,
         summary: summary,
         start_time: startTime,
         end_time: endTime
