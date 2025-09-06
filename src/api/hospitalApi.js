@@ -9,7 +9,7 @@ export const searchHospitals = async (prompt, country) => {
   console.log('API 요청 데이터:', requestData);
   
   try {
-    const response = await axios.post('https://3.35.224.212/hospital/search', requestData);
+    const response = await axios.post('http://3.35.224.212:8080/hospital/search', requestData);
     console.log('API 응답 성공:', response.data);
     return response.data;
   } catch (error) {
