@@ -1,7 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Header = ({ onToggleSidebar, sidebarOpen, selectedCountry, setSelectedCountry }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+
+  // 토큰 상태 확인
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('access_token');
+      const email = localStorage.getItem('user_email');
+      const name = localStorage.getItem('user_name');
+      
+      if (token) {
+        setIsLoggedIn(true);
+        setUserInfo({ email, name });
+      } else {
+        setIsLoggedIn(false);
+        setUserInfo(null);
+      }
+    };
+
+    checkAuthStatus();
+    
+    // localStorage 변경 감지
+    const handleStorageChange = () => {
+      checkAuthStatus();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // 컴포넌트 마운트 시에도 확인
+    const interval = setInterval(checkAuthStatus, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_name');
+    setIsLoggedIn(false);
+    setUserInfo(null);
+    console.log('Logged out successfully');
+  };
   return (
     <header className="header">
       {/* 왼쪽 로고 */}
@@ -63,21 +109,55 @@ const Header = ({ onToggleSidebar, sidebarOpen, selectedCountry, setSelectedCoun
           <option value="Other" style={{ color: "#333", background: "white" }}>Other</option>
         </select>
         
-        <button 
-          onClick={() => setShowLoginModal(true)}
-          className="nav-link" 
-          style={{ 
-            fontSize: "17px", 
-            marginRight: "35px", 
-            color: "white",
-            background: "none",
-            border: "none",
-            cursor: "pointer"
-          }}
-        >
-          LOGIN
-        </button>
-        <a href="#" className="nav-link" style={{ fontSize: "17px", color: "white" }}>MY PAGE</a>
+        {isLoggedIn ? (
+          // 로그인된 상태: 로그아웃 버튼과 사용자 정보
+          <>
+            <div style={{ 
+              fontSize: "14px", 
+              marginRight: "20px", 
+              color: "rgba(255, 255, 255, 0.8)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end"
+            }}>
+              <div style={{ fontWeight: "500" }}>{userInfo?.name || 'User'}</div>
+              <div style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.6)" }}>
+                {userInfo?.email || ''}
+              </div>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="nav-link" 
+              style={{ 
+                fontSize: "17px", 
+                marginRight: "25px", 
+                color: "white",
+                background: "none",
+                border: "none",
+                cursor: "pointer"
+              }}
+            >
+              LOGOUT
+            </button>
+            <a href="#" className="nav-link" style={{ fontSize: "17px", color: "white" }}>MY PAGE</a>
+          </>
+        ) : (
+          // 로그인되지 않은 상태: 로그인 버튼
+          <button 
+            onClick={() => setShowLoginModal(true)}
+            className="nav-link" 
+            style={{ 
+              fontSize: "17px", 
+              marginRight: "35px", 
+              color: "white",
+              background: "none",
+              border: "none",
+              cursor: "pointer"
+            }}
+          >
+            LOGIN
+          </button>
+        )}
         <button className="search-btn">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
