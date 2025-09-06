@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import Header from "./components/Header";
+import Chat from "./components/Chat";
+import Insurance from "./components/Insurance";
+import Calendar from "./components/Calendar";
 import SymptomAnalysis from "./components/SymptomAnalysis";
 import HospitalSearch from "./components/HospitalSearch";
 import InsuranceInfo from "./components/InsuranceInfo";
@@ -9,6 +12,9 @@ import { hospitalData } from "./data/hospitalData";
 import "./App.css";
 
 function App() {
+  // 현재 활성 탭 상태 (Chat이 기본)
+  const [activeTab, setActiveTab] = useState("Chat");
+
   // 증상 분석 상태
   const [symptomInput, setSymptomInput] = useState("");
   const [analysisProgress, setAnalysisProgress] = useState(0);
@@ -43,50 +49,35 @@ function App() {
 
   return (
     <div className="app">
-      <div className="container">
-        <Header />
-
-        <div className="main-content">
-          <SymptomAnalysis
-            symptomInput={symptomInput}
-            setSymptomInput={setSymptomInput}
-            analysisProgress={analysisProgress}
-            setAnalysisProgress={setAnalysisProgress}
-            symptomResult={symptomResult}
-            setSymptomResult={setSymptomResult}
-          />
-
-          <HospitalSearch
-            locationInput={locationInput}
-            setLocationInput={setLocationInput}
-            hospitalResults={hospitalResults}
-            setHospitalResults={setHospitalResults}
-            hospitals={hospitalData}
-          />
+      <Header />
+      <div className="main-layout">
+        <div className="sidebar">
+          <nav className="sidebar-nav">
+            <button 
+              className={`sidebar-link ${activeTab === "Chat" ? "active" : ""}`}
+              onClick={() => setActiveTab("Chat")}
+            >
+              Chat
+            </button>
+            <button 
+              className={`sidebar-link ${activeTab === "Insurance" ? "active" : ""}`}
+              onClick={() => setActiveTab("Insurance")}
+            >
+              Insurance
+            </button>
+            <button 
+              className={`sidebar-link ${activeTab === "Calendar" ? "active" : ""}`}
+              onClick={() => setActiveTab("Calendar")}
+            >
+              Calendar
+            </button>
+          </nav>
         </div>
-
-        <div className="main-content">
-          <InsuranceInfo
-            insuranceType={insuranceType}
-            setInsuranceType={setInsuranceType}
-            insuranceResult={insuranceResult}
-            setInsuranceResult={setInsuranceResult}
-          />
-
-          <TodoManager
-            todos={todos}
-            setTodos={setTodos}
-            setShowAddTodo={setShowAddTodo}
-          />
+        <div className="main-content-area">
+          {activeTab === "Chat" && <Chat />}
+          {activeTab === "Insurance" && <Insurance />}
+          {activeTab === "Calendar" && <Calendar />}
         </div>
-
-        {showAddTodo && (
-          <AddTodoModal
-            todos={todos}
-            setTodos={setTodos}
-            setShowAddTodo={setShowAddTodo}
-          />
-        )}
       </div>
     </div>
   );
