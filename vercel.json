@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/hospital/:path*",
+      "destination": "http://3.35.224.212:8080/hospital/:path*"
+    }
+  ]
+}
