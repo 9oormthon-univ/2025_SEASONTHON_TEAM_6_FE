@@ -21,6 +21,8 @@ const Calendar = () => {
     
     if (!accessToken || !calendarsData) {
       console.log('토큰 또는 캘린더 정보가 없습니다.');
+      console.log('accessToken:', accessToken ? '있음' : '없음');
+      console.log('calendarsData:', calendarsData ? '있음' : '없음');
       return;
     }
 
@@ -28,18 +30,21 @@ const Calendar = () => {
       setIsLoading(true);
       const calendars = JSON.parse(calendarsData);
       
-      // 현재 월의 시작일과 종료일 계산
-      const startOfMonth = new Date(currentYear, currentMonth, 1);
-      const endOfMonth = new Date(currentYear, currentMonth + 1, 0);
+      // 현재 월의 시작일과 종료일 계산 (한국 시간대)
+      const startOfMonth = new Date(currentYear, currentMonth, 1, 0, 0, 0);
+      const endOfMonth = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59);
       
-      const timeMin = startOfMonth.toISOString();
-      const timeMax = endOfMonth.toISOString();
+      // 한국 시간대(+09:00)로 변환
+      const timeMin = startOfMonth.toLocaleString('sv-SE').replace(' ', 'T') + '+09:00';
+      const timeMax = endOfMonth.toLocaleString('sv-SE').replace(' ', 'T') + '+09:00';
       
       console.log('이벤트 로드 중...', { timeMin, timeMax });
+      console.log('캘린더 목록:', calendars);
       
       // 각 캘린더에서 이벤트 가져오기
       const allEvents = [];
       for (const calendar of calendars.calendars || []) {
+        console.log(`캘린더 ${calendar.id} 이벤트 요청 중...`);
         try {
           const response = await getCalendarEvents(
             accessToken, 
@@ -48,8 +53,13 @@ const Calendar = () => {
             timeMax
           );
           
+          console.log(`캘린더 ${calendar.id} 응답:`, response);
+          
           if (response.events) {
+            console.log(`캘린더 ${calendar.id} 이벤트 개수:`, response.events.length);
             allEvents.push(...response.events);
+          } else {
+            console.log(`캘린더 ${calendar.id}에 events 필드가 없음`);
           }
         } catch (error) {
           console.error(`캘린더 ${calendar.id} 이벤트 로드 오류:`, error);
