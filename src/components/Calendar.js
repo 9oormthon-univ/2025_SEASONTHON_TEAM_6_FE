@@ -293,7 +293,9 @@ const Calendar = () => {
                 border: date.isToday ? '2px solid #00FFFF' : '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
-                backdropFilter: 'blur(5px)'
+                backdropFilter: 'blur(5px)',
+                overflow: 'hidden',
+                maxHeight: '120px'
               }}
               onMouseEnter={(e) => {
                 if (date.isCurrentMonth) {
@@ -316,12 +318,18 @@ const Calendar = () => {
               
               {/* 이벤트 표시 */}
               {dayEvents.length > 0 && (
-                <div style={{ width: '100%' }}>
-                  {dayEvents.slice(0, 2).map((event, eventIndex) => (
+                <div style={{ 
+                  width: '100%', 
+                  flex: 1,
+                  overflowY: 'auto',
+                  maxHeight: '80px',
+                  paddingRight: '2px'
+                }}>
+                  {dayEvents.map((event, eventIndex) => (
                     <div
                       key={eventIndex}
                       style={{
-                        fontSize: '10px',
+                        fontSize: '9px',
                         backgroundColor: 'rgba(0, 255, 255, 0.3)',
                         color: 'white',
                         padding: '1px 3px',
@@ -330,22 +338,14 @@ const Calendar = () => {
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
-                        border: '1px solid rgba(0, 255, 255, 0.5)'
+                        border: '1px solid rgba(0, 255, 255, 0.5)',
+                        minHeight: '12px'
                       }}
                       title={event.summary}
                     >
                       {event.summary}
                     </div>
                   ))}
-                  {dayEvents.length > 2 && (
-                    <div style={{
-                      fontSize: '9px',
-                      color: 'rgba(0, 255, 255, 0.7)',
-                      textAlign: 'center'
-                    }}>
-                      +{dayEvents.length - 2}개 더
-                    </div>
-                  )}
                 </div>
               )}
             </div>
