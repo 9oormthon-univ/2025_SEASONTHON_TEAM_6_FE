@@ -43,7 +43,7 @@ const Calendar = () => {
       
       // 각 캘린더에서 이벤트 가져오기
       const allEvents = [];
-      for (const calendar of calendars.calendars || []) {
+      for (const calendar of calendars.items || []) {
         console.log(`캘린더 ${calendar.id} 이벤트 요청 중...`);
         try {
           const response = await getCalendarEvents(

@@ -29,6 +29,14 @@ export const addCalendarEvent = async (accessToken, summary, startTime, endTime)
 // 캘린더 이벤트 조회 API
 export const getCalendarEvents = async (accessToken, calendarId, timeMin, timeMax, maxResults = 50) => {
   try {
+    console.log('API 요청 데이터:', {
+      access_token: accessToken ? '있음' : '없음',
+      calendar_id: calendarId,
+      time_min: timeMin,
+      time_max: timeMax,
+      max_results: maxResults
+    });
+    
     const response = await fetch('https://chibbohae-fastapi.store/calendar/list_events', {
       method: 'POST',
       headers: {
